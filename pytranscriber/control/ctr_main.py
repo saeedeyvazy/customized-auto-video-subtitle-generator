@@ -23,7 +23,8 @@ from pytranscriber.control.thread_cancel_autosub import Thread_Cancel_Autosub
 from pytranscriber.gui.gui import Ui_window
 import os
 
-
+import glob
+from autosub.constants import INPUT_FOLDER_PATH,DEFAULT_LANG
 class Ctr_Main():
 
     def __init__(self):
@@ -40,7 +41,7 @@ class Ctr_Main():
 
 
     def __initGUI(self):
-
+        self.__listenerBExec()
         #language selection list
         list_languages =  [ "en-US - English (United States)",
                             "en-AU - English (Australia)",
@@ -281,20 +282,21 @@ class Ctr_Main():
             self.objGUI.bConvert.setEnabled(True)
             self.objGUI.bRemoveFile.setEnabled(True)
 
+    # def __getInputFiles(self):
 
     def __listenerBExec(self):
         if not MyUtil.is_internet_connected():
             self.__showErrorMessage("Error! Cannot reach Google Speech Servers. \n\n1) Please make sure you are connected to the internet. \n2) If you are in China or other place that blocks access to Google servers: please install and enable a desktop-wide VPN app like Windscribe before trying to use pyTranscriber!")
         else:
             #extracts the two letter lang_code from the string on language selection
-            selectedLanguage = self.objGUI.cbSelectLang.currentText()
-            indexSpace = selectedLanguage.index(" ")
-            langCode = selectedLanguage[:indexSpace]
-
-            listFiles = []
-            for i in range(self.objGUI.qlwListFilesSelected.count()):
-                listFiles.append(str(self.objGUI.qlwListFilesSelected.item(i).text()))
-
+            # selectedLanguage = self.objGUI.cbSelectLang.currentText()
+            # indexSpace = selectedLanguage.index(" ")
+            # langCode = selectedLanguage[:indexSpace]
+            langCode =DEFAULT_LANG
+            listFiles = [os.path.join(r,file) for r,d,f in os.walk(INPUT_FOLDER_PATH) for file in f]
+            # for i in range(self.objGUI.qlwListFilesSelected.count()):
+            #     listFiles.append(str(self.objGUI.qlwListFilesSelected.item(i).text()))
+            print(listFiles)
             outputFolder = self.objGUI.qleOutputFolder.text()
 
             if self.objGUI.chbxOpenOutputFilesAuto.checkState() == Qt.Checked:
